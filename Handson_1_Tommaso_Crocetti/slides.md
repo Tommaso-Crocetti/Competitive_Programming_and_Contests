@@ -5,7 +5,7 @@ theme: seriph
 # like them? see https://unsplash.com/collections/94734566/slidev
 background: https://cover.sli.dev
 # some information about your slides (markdown enabled)
-title: Welcome to Slidev
+title: Handson 1 solution
 info: |
     ## Slidev Starter Template
     Presentation slides for developers.
@@ -29,7 +29,7 @@ overviewSnapshots: true
 Tommaso Crocetti
 
 <div class="abs-br m-6 flex gap-2">
-  <a href="https://github.com/slidevjs/slidev" target="_blank" alt="GitHub" title="Open in GitHub"
+  <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
     class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
     <carbon-logo-github />
   </a>
@@ -77,6 +77,12 @@ h1 {
   -moz-text-fill-color: transparent;
 }
 </style>
+<div class="abs-br m-6 flex gap-2">
+  <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
+    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
+    <carbon-logo-github />
+  </a>
+</div>
 
 <!--
 Here is another comment.
@@ -125,6 +131,12 @@ The implementation of the solution is split into two functions:
     the minimum and maximum of the current subtree as the minimum/maximum
     between the current node's key and the left and right minimum/maximum.
 
+<div class="abs-br m-6 flex gap-2">
+  <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
+    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
+    <carbon-logo-github />
+  </a>
+</div>
 ---
 
 # Code #1
@@ -152,7 +164,12 @@ fn rec_check_bst(&self, node_id: Option<usize>) -> (bool, u32, u32) {
     (true, 0, u32::MAX)
 }
 ```
-
+<div class="abs-br m-6 flex gap-2">
+  <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
+    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
+    <carbon-logo-github />
+  </a>
+</div>
 ---
 
 # Exercise #2
@@ -171,6 +188,12 @@ be simply collected recursively, the last one must be
 calculated as the sum between the current node's key and
 the left and right maximum path sum from a leaf to the subtree's root.
 
+<div class="abs-br m-6 flex gap-2">
+  <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
+    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
+    <carbon-logo-github />
+  </a>
+</div>
 ---
 
 # Solution #2
@@ -194,6 +217,13 @@ As before, the implementation of the solution is split into two functions:
     before. The second value is the sum between the current node's key
     and the maximum path leaf-child of the left or right subtree,
     the new maximum path sum leaf-node.
+
+<div class="abs-br m-6 flex gap-2">
+  <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
+    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
+    <carbon-logo-github />
+  </a>
+</div>
 
 ---
 
@@ -219,3 +249,23 @@ fn rec_max_path_sum(&self, node_id: Option<usize>) -> (u32, u32) {
     (0, 0)
 }
 ```
+
+<div class="abs-br m-6 flex gap-2">
+  <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
+    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
+    <carbon-logo-github />
+  </a>
+</div>
+
+---
+theme: seriph
+background: https://images.unsplash.com/photo-1516728778615-2d590ea1858d
+class: flex flex-col justify-center items-center h-screen
+---
+
+# Thanks for the attention!
+
+Here you can find my updated [Github](https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests) repository for the course
+
+
+
