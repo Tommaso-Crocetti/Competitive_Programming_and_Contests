@@ -20,6 +20,7 @@ drawings:
 transition: slide-left
 # enable MDC Syntax: https://sli.dev/features/mdc
 mdc: true
+katex: true
 # take snapshot for each slide in the overview
 overviewSnapshots: true
 ---
@@ -59,7 +60,6 @@ impl Node {
     }
 }
 ```
-
 ```rust
 struct Tree {
     nodes: Vec<Node>,
@@ -137,11 +137,12 @@ The implementation of the solution is split into two functions:
     <carbon-logo-github />
   </a>
 </div>
+
+---
+katex: true
 ---
 
 # Code #1
-
-<br>
 
 ```rust
 pub fn check_bst(&self) -> bool {
@@ -149,8 +150,6 @@ pub fn check_bst(&self) -> bool {
     result
 }
 ```
-
-<br>
 ```rust
 fn rec_check_bst(&self, node_id: Option<usize>) -> (bool, u32, u32) {
     if let Some(id) = node_id {
@@ -164,6 +163,8 @@ fn rec_check_bst(&self, node_id: Option<usize>) -> (bool, u32, u32) {
     (true, 0, u32::MAX)
 }
 ```
+<br>
+This solution exploits a post-order visit, where each node is visited exactly once. Given the number of nodes n, the time complexity is $\Theta(n)$, and space complexity is $$\Theta(1)$$ since it doesn't require any additional space.
 <div class="abs-br m-6 flex gap-2">
   <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
     class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
@@ -235,8 +236,6 @@ pub fn max_path_sum(&self) -> u32 {
     result
 }
 ```
-
-<br>
 ```rust
 fn rec_max_path_sum(&self, node_id: Option<usize>) -> (u32, u32) {
     if let Some(id) = node_id {
@@ -249,7 +248,8 @@ fn rec_max_path_sum(&self, node_id: Option<usize>) -> (u32, u32) {
     (0, 0)
 }
 ```
-
+<br>
+As the previous solution, it uses a post-order visit on the tree, requiring $\Theta(n)$ time complexity and $\Theta(1)$ space complexity.
 <div class="abs-br m-6 flex gap-2">
   <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
     class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
