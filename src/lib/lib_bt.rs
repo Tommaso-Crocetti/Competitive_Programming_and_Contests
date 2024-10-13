@@ -147,14 +147,14 @@ where
             let node = &self.nodes[id];
             let (bst_l, min_l, max_l) = self.rec_check_bst(node.id_left);
             let (bst_r, min_r, max_r) = self.rec_check_bst(node.id_right);
-            let result: bool = bst_l && bst_r && node.key >= max_l && node.key < min_r;
+            let result: bool = node.key >= max_l && node.key < min_r;
             return (
-                result,
+                result && bst_l && bst_r,
                 node.key.min(min_l).min(min_r),
                 node.key.max(max_l).max(max_r),
             );
         }
-        (true, T::min_value(), T::max_value())
+        (true, T::max_value(), T::min_value())
     }
 
     pub fn check_balance(&self) -> bool {
@@ -245,21 +245,30 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_unary() {
+        let tree = Tree::with_root(0);
+        assert_eq!(tree.max(), 0);
+        assert_eq!(tree.min(), 0);
+        assert_eq!(tree.check_bst(), true);
+        assert_eq!(tree.max_path_sum(), 0);
+    }
+
+    #[test]
     fn test_unsigned() {
         let mut tree = Tree::with_root(10);
 
         tree.add_node(0, 5, true); // id 1
         tree.add_node(0, 22, false); // id 2
 
-        tree.add_node(1, 7, false); // id 3
+        tree.add_node(1, 10, false); // id 3
         tree.add_node(2, 20, true); // id 4
 
         assert_eq!(tree.max(), 22);
         assert_eq!(tree.min(), 5);
-        assert_eq!(tree.check_bst(), false);
+        assert_eq!(tree.check_bst(), true);
         assert_eq!(tree.check_balance(), true);
-        assert_eq!(tree.equals_sum(), 0);
-        assert_eq!(tree.max_path_sum(), 64);
+        assert_eq!(tree.equals_sum(), 1);
+        assert_eq!(tree.max_path_sum(), 67);
         assert_eq!(tree.check_max_heap(), false)
     }
 
