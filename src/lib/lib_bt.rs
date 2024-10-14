@@ -191,23 +191,62 @@ where
         (0, T::zero())
     }
 
-    pub fn max_path_sum(&self) -> T {
+    pub fn max_path_sum(&self) -> Option<T> {
         let (result, _) = self.rec_max_path_sum(Some(0));
         result
     }
 
-    fn rec_max_path_sum(&self, node_id: Option<usize>) -> (T, T) {
+    fn rec_max_path_sum(&self, node_id: Option<usize>) -> (Option<T>, Option<T>) {
         if let Some(id) = node_id {
             assert!(id < self.nodes.len(), "Node id is out of range");
             let node = &self.nodes[id];
             let (lres, lpath) = self.rec_max_path_sum(node.id_left);
             let (rres, rpath) = self.rec_max_path_sum(node.id_right);
-            if lres.max(rres) == T::min_value() {return (node.key, node.key);}
-            if lres != T::min_value() && rres == T::min_value() {return (lres.max(lpath + node.key), lpath + node.key);}
-            if lres == T::min_value() && rres != T::min_value() {return (rres.max(rpath + node.key), rpath + node.key);}
-            return (lres.max(rres).max(lpath + rpath + node.key), lpath.max(rpath) + node.key);
+            match (lres, rres) {
+                (Some(left_res), Some(right_res)) => {
+                    return (Some(left_res.max(right_res).max(lpath.unwrap() + rpath.unwrap() + node.key)), Some(lpath.unwrap().max(rpath.unwrap()) + node.key));
+                },
+                (None, Some(right_res)) => {
+                    match (lpath, rpath) {
+                        (Some(left_path), Some(right_path)) => {
+                            return (Some(right_res.max(left_path + right_path + node.key)), Some(left_path.max(right_path) + node.key));
+                        },
+                        (None, Some(right_path)) => {
+                            return (Some(right_res), Some(right_path + node.key));
+                        },
+                        (_, _) =>{}
+                    }
+                },
+                (Some(left_res), None) => {
+                    match (lpath, rpath) {
+                        (Some(left_path), Some(right_path)) => {
+                            return (Some(left_res.max(left_path + right_path + node.key)), Some(left_path.max(right_path) + node.key));
+                        },
+                        (Some(left_path), None) => {
+                            return (Some(left_res), Some(left_path + node.key));
+                        },
+                        (_, _) =>{}
+                    }
+                },
+                (None, None) => {
+                    match (lpath, rpath) {
+                        (Some(left_path), Some(right_path)) => {
+                            return (Some(left_path + right_path + node.key), Some(left_path.max(right_path) + node.key));
+                        },
+                        (Some(left_path), None) => {
+                            return (None, Some(left_path + node.key));
+                        },
+                        (None, Some(right_path)) => {
+                            return (None, Some(right_path + node.key));
+                        },
+                        (None, None) => {
+                            return (None, Some(node.key));
+                        }
+                    }
+                }
+            }
         };
-        (T::min_value(), T::min_value())
+        (None, None)
     }
 
     pub fn check_max_heap(&self) -> bool {
@@ -250,7 +289,7 @@ mod tests {
         assert_eq!(tree.max(), 0);
         assert_eq!(tree.min(), 0);
         assert_eq!(tree.check_bst(), true);
-        assert_eq!(tree.max_path_sum(), 0);
+        assert_eq!(tree.max_path_sum(), None);
     }
 
     #[test]
@@ -268,7 +307,7 @@ mod tests {
         assert_eq!(tree.check_bst(), true);
         //assert_eq!(tree.check_balance(), true);
         //assert_eq!(tree.equals_sum(), 1);
-        assert_eq!(tree.max_path_sum(), 67);
+        assert_eq!(tree.max_path_sum(), Some(67));
         //assert_eq!(tree.check_max_heap(), false)
     }
 
@@ -287,7 +326,7 @@ mod tests {
         assert_eq!(tree.check_bst(), false);
         //assert_eq!(tree.check_balance(), true);
         //assert_eq!(tree.equals_sum(), 0);
-        assert_eq!(tree.max_path_sum(), 20);
+        assert_eq!(tree.max_path_sum(), Some(-24));
         //assert_eq!(tree.check_max_heap(), false)
     }
     #[test]
@@ -304,7 +343,7 @@ mod tests {
         tree.add_node(right_child_id, 12, true); // Left child of right child
         tree.add_node(right_child_id, 18, false); // Right child of right child
         assert_eq!(tree.check_bst(), true);
-        assert_eq!(tree.max_path_sum(), 55);
+        assert_eq!(tree.max_path_sum(), Some(55));
     }
 
     #[test]
@@ -321,7 +360,7 @@ mod tests {
         tree.add_node(right_child_id, 12, true); // Left child of right child
         tree.add_node(right_child_id, 18, false); // Right child of right child
         assert_eq!(tree.check_bst(), false);
-        assert_eq!(tree.max_path_sum(), 21);
+        assert_eq!(tree.max_path_sum(), Some(21));
     }
 
     #[test]
@@ -338,7 +377,7 @@ mod tests {
         tree.add_node(right_child_id, -12, true); // Left child of right child
         tree.add_node(right_child_id, -18, false); // Right child of right child
         assert_eq!(tree.check_bst(), false);
-        assert_eq!(tree.max_path_sum(), 35);
+        assert_eq!(tree.max_path_sum(), Some(35));
     }
 
     #[test]
@@ -355,7 +394,7 @@ mod tests {
         tree.add_node(4, -12, true); // Left child of right child
         tree.add_node(5, -18, false); // Right child of right child
         assert_eq!(tree.check_bst(), false);
-        assert_eq!(tree.max_path_sum(), 20);
+        assert_eq!(tree.max_path_sum(), None);
     }
 
     #[test]
@@ -372,7 +411,7 @@ mod tests {
         tree.add_node(4, -12, true); // Left child of right child
         tree.add_node(0, -18, false); // Right child of right child
         assert_eq!(tree.check_bst(), false);
-        assert_eq!(tree.max_path_sum(), 33);
+        assert_eq!(tree.max_path_sum(), Some(20));
     }
 
     #[test]
@@ -389,6 +428,6 @@ mod tests {
         tree.add_node(3, -12, true); // Left child of right child
         tree.add_node(4, -18, false); // Right child of right child
         assert_eq!(tree.check_bst(), false);
-        assert_eq!(tree.max_path_sum(), 29);
+        assert_eq!(tree.max_path_sum(), Some(5));
     }
 }
