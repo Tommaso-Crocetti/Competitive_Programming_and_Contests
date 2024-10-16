@@ -1,27 +1,48 @@
 use std::collections::BTreeSet;
 
 fn intersects(segment: (i32, i32, i32, i32), other: (i32, i32, i32, i32)) -> bool {
-    fn orientation(px: i32, py: i32, qx: i32, qy: i32, rx: i32, ry: i32) -> i32 {
-        (qy - py) * (rx - qx) - (qx - px) * (ry - qy)
+    let (s0, s1, s2, s3) = (segment.0 as f64, segment.1 as f64, segment.2 as f64, segment.3 as f64);
+    let (o0, o1, o2, o3) = (other.0 as f64, other.1 as f64, other.2 as f64, other.3 as f64);
+    let num_1 = s3 - s1;
+    let den_1 = s2 - s0;
+    let m_1: Option<f64> = if den_1 == 0.0 {None} else {Some(num_1 / den_1)};
+    let num_2 = o3 - o1;
+    let den_2 = o2 - o0;
+    let m_2: Option<f64> = if den_2 == 0.0 {None} else {Some(num_2 / den_2)};
+    match (m_1, m_2) {
+        (Some(m1), Some(m2)) => {
+            let q1 = s1 - (m1 * s0);
+            let q2 = o1 - (m2 * o0);
+            let x_res = (q2 - q1) / (m1 - m2);
+            return (s0 <= x_res && x_res <= s2 && o0 <= x_res && x_res <= o2) 
+                || (s2 <= x_res && x_res <= s0 && o2 <= x_res && x_res <= o0);
+        },
+        (None, Some(m2)) => {
+            let x_res = s0;
+            if o0 <= x_res && x_res <= o2 {
+                let q2 = o1 - (m2 * o0);
+                let y_res = m2 * x_res + q2;
+                return (s1 <= y_res && y_res <= s3)
+                    || (s3 <= y_res && y_res <= s1);
+            } else {
+                return false;
+            }
+        },
+        (Some(m1), None) => {
+            let x_res = o0;
+            if s0 <= x_res && x_res <= s2 {
+                let q1 = s1 - (m1 * s0);
+                let y_res = m1 * x_res + q1;
+                return (o1 <= y_res && y_res <= o3)
+                    || (o3 <= y_res && y_res <= o1);
+            } else {
+                return false;
+            }
+        },
+        (None, None) => {
+            return s0 == o0;
+        }
     }
-
-    fn on_segment(px: i32, py: i32, qx: i32, qy: i32, rx: i32, ry: i32) -> bool {
-        (qx <= px.max(rx) && qx >= px.min(rx)) && (qy <= py.max(ry) && qy >= py.min(ry))
-    }
-
-    let o1 = orientation(segment.0, segment.1, segment.2, segment.3, other.0, other.1);
-    let o2 = orientation(segment.0, segment.1, segment.2, segment.3, other.2, other.3);
-    let o3 = orientation(other.0, other.1, other.2, other.3, segment.0, segment.1);
-    let o4 = orientation(other.0, other.1, other.2, other.3, segment.2, segment.3);
-
-    if o1 != o2 && o3 != o4 {
-        return true;
-    }
-
-    (o1 == 0 && on_segment(segment.0, segment.1, other.0, other.1, segment.2, segment.3)) ||
-    (o2 == 0 && on_segment(segment.0, segment.1, other.2, other.3, segment.2, segment.3)) ||
-    (o3 == 0 && on_segment(other.0, other.1, segment.0, segment.1, other.2, other.3)) ||
-    (o4 == 0 && on_segment(other.0, other.1, segment.2, segment.3, other.2, other.3))
 }
 
 
@@ -44,14 +65,12 @@ fn cow_steeplechase(v: &[(i32, i32, i32, i32)]) -> usize {
             for active_idx in &active {
                 let active_seg = v[*active_idx];
                 if intersects(current, active_seg) {
-                    remove = Some(index.max(*active_idx));
+                    remove = Some(index);
                     break;
                 }
             }
-            println!("insert");
             active.insert(index);
         } else {
-            println!("rem");
             active.remove(&index);
         }
         if let Some(result) = remove {
@@ -62,5 +81,5 @@ fn cow_steeplechase(v: &[(i32, i32, i32, i32)]) -> usize {
 }
 
 fn main() {
-    println!("{}", cow_steeplechase(&[(2,1,6,1), (4,0,1,5), (5,6,5,5), (2,7,1,3)]));
+    println!("{}", cow_steeplechase(&[(2, 1, 6, 1), (4, 0, 1, 5), (5, 6, 5, 5), (2, 7, 1, 3),]));
 }
