@@ -30,6 +30,6 @@ fn longest_k_good(v: &[i32], k: usize) -> (usize, usize) {
 }
 
 fn main() {
-    let (l, r)  = longest_k_good(&[1, 1, 2, 3, 3, 4, 4, 1, 3], 3);
+    let (l, r) = longest_k_good(&[1, 1, 2, 3, 3, 4, 4, 1, 3], 3);
     println!("{}, {}", l, r);
 }

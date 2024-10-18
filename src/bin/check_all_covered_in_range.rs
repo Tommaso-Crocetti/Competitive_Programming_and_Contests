@@ -17,5 +17,8 @@ fn check_all_covered_in_range(v: &[(i32, i32)], left: i32, right: i32) -> bool {
 }
 
 fn main() {
-    println!("{}", check_all_covered_in_range(&[(1, 2), (3, 4), (4, 5)], 2, 5));
+    println!(
+        "{}",
+        check_all_covered_in_range(&[(1, 2), (3, 4), (4, 5)], 2, 5)
+    );
 }

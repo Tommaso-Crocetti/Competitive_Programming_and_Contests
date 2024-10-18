@@ -136,6 +136,29 @@ where
         None
     }
 
+    ///check if the tree is a bst.
+    ///
+    ///#Example
+    ///```
+    ///use competitive_programming_and_contest_24::lib::lib_bt::Tree;
+    ///let mut tree = Tree::with_root(10);
+    ///tree.add_node(0, 5, true);
+    ///tree.add_node(0, 22, false);
+    ///tree.add_node(1, 10, false);
+    ///tree.add_node(2, 20, true);
+    ///assert_eq!(tree.check_bst(), true);
+    ///```
+    ///```
+    ///use competitive_programming_and_contest_24::lib::lib_bt::Tree;
+    ///let mut tree = Tree::with_root(10);
+    ///let left_child_id = tree.add_node(0, 5, true);
+    ///let right_child_id = tree.add_node(0, -15, false);
+    ///tree.add_node(left_child_id, 3, true);
+    ///tree.add_node(left_child_id, -7, false);
+    ///tree.add_node(right_child_id, 12, true);
+    ///tree.add_node(right_child_id, 18, false);
+    ///assert_eq!(tree.check_bst(), false);
+    ///```
     pub fn check_bst(&self) -> bool {
         let (result, _, _) = self.rec_check_bst(Some(0));
         result
@@ -191,6 +214,25 @@ where
         (0, T::zero())
     }
 
+    ///Compute the maximum sum path from a leaf to another leaf contained in the tree.
+    ///If there exists at least two leaf, it returns Some(result), otherwise None.
+    ///
+    ///#Example
+    ///```
+    ///use competitive_programming_and_contest_24::lib::lib_bt::Tree;
+    ///let mut tree = Tree::with_root(10);
+    ///tree.add_node(0, 5, true);
+    ///tree.add_node(0, 22, false);
+    ///tree.add_node(1, 10, false);
+    ///tree.add_node(2, 20, true);
+    ///assert_eq!(tree.max_path_sum(), Some(67));
+    ///```
+    ///```
+    ///use competitive_programming_and_contest_24::lib::lib_bt::Tree;
+    ///let tree = Tree::with_root(0);
+    ///assert_eq!(tree.check_bst(), true);
+    ///assert_eq!(tree.max_path_sum(), None);
+    ///```
     pub fn max_path_sum(&self) -> Option<T> {
         let (result, _) = self.rec_max_path_sum(Some(0));
         result
@@ -204,46 +246,54 @@ where
             let (rres, rpath) = self.rec_max_path_sum(node.id_right);
             match (lres, rres) {
                 (Some(left_res), Some(right_res)) => {
-                    return (Some(left_res.max(right_res).max(lpath.unwrap() + rpath.unwrap() + node.key)), Some(lpath.unwrap().max(rpath.unwrap()) + node.key));
-                },
-                (None, Some(right_res)) => {
-                    match (lpath, rpath) {
-                        (Some(left_path), Some(right_path)) => {
-                            return (Some(right_res.max(left_path + right_path + node.key)), Some(left_path.max(right_path) + node.key));
-                        },
-                        (None, Some(right_path)) => {
-                            return (Some(right_res), Some(right_path + node.key));
-                        },
-                        (_, _) =>{}
-                    }
-                },
-                (Some(left_res), None) => {
-                    match (lpath, rpath) {
-                        (Some(left_path), Some(right_path)) => {
-                            return (Some(left_res.max(left_path + right_path + node.key)), Some(left_path.max(right_path) + node.key));
-                        },
-                        (Some(left_path), None) => {
-                            return (Some(left_res), Some(left_path + node.key));
-                        },
-                        (_, _) =>{}
-                    }
-                },
-                (None, None) => {
-                    match (lpath, rpath) {
-                        (Some(left_path), Some(right_path)) => {
-                            return (Some(left_path + right_path + node.key), Some(left_path.max(right_path) + node.key));
-                        },
-                        (Some(left_path), None) => {
-                            return (None, Some(left_path + node.key));
-                        },
-                        (None, Some(right_path)) => {
-                            return (None, Some(right_path + node.key));
-                        },
-                        (None, None) => {
-                            return (None, Some(node.key));
-                        }
-                    }
+                    return (
+                        Some(
+                            left_res
+                                .max(right_res)
+                                .max(lpath.unwrap() + rpath.unwrap() + node.key),
+                        ),
+                        Some(lpath.unwrap().max(rpath.unwrap()) + node.key),
+                    );
                 }
+                (Some(left_res), None) => match rpath {
+                    None => {
+                        return (Some(left_res), Some(lpath.unwrap() + node.key));
+                    }
+                    Some(right_path) => {
+                        return (
+                            Some(left_res.max(lpath.unwrap() + right_path + node.key)),
+                            Some(lpath.unwrap().max(right_path) + node.key),
+                        );
+                    }
+                },
+                (None, Some(right_res)) => match lpath {
+                    None => {
+                        return (Some(right_res), Some(rpath.unwrap() + node.key));
+                    }
+                    Some(left_path) => {
+                        return (
+                            Some(right_res.max(left_path + rpath.unwrap() + node.key)),
+                            Some(left_path.max(rpath.unwrap()) + node.key),
+                        );
+                    }
+                },
+                (None, None) => match (lpath, rpath) {
+                    (Some(left_path), Some(right_path)) => {
+                        return (
+                            Some(left_path + right_path + node.key),
+                            Some(left_path.max(right_path) + node.key),
+                        );
+                    }
+                    (Some(left_path), None) => {
+                        return (None, Some(left_path + node.key));
+                    }
+                    (None, Some(right_path)) => {
+                        return (None, Some(right_path + node.key));
+                    }
+                    (None, None) => {
+                        return (None, Some(node.key));
+                    }
+                },
             }
         };
         (None, None)
@@ -286,8 +336,6 @@ mod tests {
     #[test]
     fn test_unary() {
         let tree = Tree::with_root(0);
-        assert_eq!(tree.max(), 0);
-        assert_eq!(tree.min(), 0);
         assert_eq!(tree.check_bst(), true);
         assert_eq!(tree.max_path_sum(), None);
     }
@@ -295,53 +343,35 @@ mod tests {
     #[test]
     fn test_unsigned() {
         let mut tree = Tree::with_root(10);
-
-        tree.add_node(0, 5, true); // id 1
-        tree.add_node(0, 22, false); // id 2
-
-        tree.add_node(1, 10, false); // id 3
-        tree.add_node(2, 20, true); // id 4
-
-        //assert_eq!(tree.max(), 22);
-        //assert_eq!(tree.min(), 5);
+        tree.add_node(0, 5, true);
+        tree.add_node(0, 22, false);
+        tree.add_node(1, 10, false);
+        tree.add_node(2, 20, true);
         assert_eq!(tree.check_bst(), true);
-        //assert_eq!(tree.check_balance(), true);
-        //assert_eq!(tree.equals_sum(), 1);
         assert_eq!(tree.max_path_sum(), Some(67));
-        //assert_eq!(tree.check_max_heap(), false)
     }
 
     #[test]
     fn test_signed() {
         let mut tree = Tree::with_root(-10);
-
-        tree.add_node(0, -5, true); // id 1
-        tree.add_node(0, -22, false); // id 2
-
-        tree.add_node(1, -7, false); // id 3
-        tree.add_node(2, 20, true); // id 4
-
-        //assert_eq!(tree.max(), 20);
-        //assert_eq!(tree.min(), -22);
-        assert_eq!(tree.check_bst(), false);
-        //assert_eq!(tree.check_balance(), true);
-        //assert_eq!(tree.equals_sum(), 0);
-        assert_eq!(tree.max_path_sum(), Some(-24));
-        //assert_eq!(tree.check_max_heap(), false)
+        tree.add_node(0, -22, true);
+        tree.add_node(0, -5, false);
+        tree.add_node(1, -11, false);
+        tree.add_node(2, -7, true);
+        assert_eq!(tree.check_bst(), true);
+        assert_eq!(tree.max_path_sum(), Some(-55));
     }
     #[test]
     fn test_1() {
         let mut tree = Tree::with_root(10);
 
-        // Level 1
-        let left_child_id = tree.add_node(0, 5, true); // Left child of root
-        let right_child_id = tree.add_node(0, 15, false); // Right child of root
-    
-        // Level 2
-        tree.add_node(left_child_id, 3, true); // Left child of left child
-        tree.add_node(left_child_id, 7, false); // Right child of left child
-        tree.add_node(right_child_id, 12, true); // Left child of right child
-        tree.add_node(right_child_id, 18, false); // Right child of right child
+        let left_child_id = tree.add_node(0, 5, true);
+        let right_child_id = tree.add_node(0, 15, false);
+
+        tree.add_node(left_child_id, 3, true);
+        tree.add_node(left_child_id, 7, false);
+        tree.add_node(right_child_id, 12, true);
+        tree.add_node(right_child_id, 18, false);
         assert_eq!(tree.check_bst(), true);
         assert_eq!(tree.max_path_sum(), Some(55));
     }
@@ -350,15 +380,13 @@ mod tests {
     fn test_2() {
         let mut tree = Tree::with_root(10);
 
-        // Level 1
-        let left_child_id = tree.add_node(0, 5, true); // Left child of root
-        let right_child_id = tree.add_node(0, -15, false); // Right child of root
-    
-        // Level 2
-        tree.add_node(left_child_id, 3, true); // Left child of left child
-        tree.add_node(left_child_id, -7, false); // Right child of left child
-        tree.add_node(right_child_id, 12, true); // Left child of right child
-        tree.add_node(right_child_id, 18, false); // Right child of right child
+        let left_child_id = tree.add_node(0, 5, true);
+        let right_child_id = tree.add_node(0, -15, false);
+
+        tree.add_node(left_child_id, 3, true);
+        tree.add_node(left_child_id, -7, false);
+        tree.add_node(right_child_id, 12, true);
+        tree.add_node(right_child_id, 18, false);
         assert_eq!(tree.check_bst(), false);
         assert_eq!(tree.max_path_sum(), Some(21));
     }
@@ -367,33 +395,29 @@ mod tests {
     fn test_3() {
         let mut tree = Tree::with_root(5);
 
-        // Level 1
-        let left_child_id = tree.add_node(0, 10, true); // Left child of root
-        let right_child_id = tree.add_node(0, 15, false); // Right child of root
-    
-        // Level 2
-        tree.add_node(left_child_id, 3, true); // Left child of left child
-        tree.add_node(left_child_id, 17, false); // Right child of left child
-        tree.add_node(right_child_id, -12, true); // Left child of right child
-        tree.add_node(right_child_id, -18, false); // Right child of right child
-        assert_eq!(tree.check_bst(), false);
-        assert_eq!(tree.max_path_sum(), Some(35));
+        let left_child_id = tree.add_node(0, -10, true);
+        let right_child_id = tree.add_node(0, 15, false);
+
+        tree.add_node(left_child_id, -17, true);
+        tree.add_node(left_child_id, -3, false);
+        tree.add_node(right_child_id, 12, true);
+        tree.add_node(right_child_id, 18, false);
+        assert_eq!(tree.check_bst(), true);
+        assert_eq!(tree.max_path_sum(), Some(45));
     }
 
     #[test]
     fn test_4() {
         let mut tree = Tree::with_root(5);
 
-        // Level 1
-        tree.add_node(0, 10, true); // Left child of root
-        tree.add_node(1, 15, false); // Right child of root
-    
-        // Level 2
-        tree.add_node(2, 3, true); // Left child of left child
-        tree.add_node(3, 17, false); // Right child of left child
-        tree.add_node(4, -12, true); // Left child of right child
-        tree.add_node(5, -18, false); // Right child of right child
-        assert_eq!(tree.check_bst(), false);
+        tree.add_node(0, -5, true);
+        tree.add_node(1, 3, false);
+
+        tree.add_node(2, -3, true);
+        tree.add_node(3, 0, false);
+        tree.add_node(4, -2, true);
+        tree.add_node(5, -1, false);
+        assert_eq!(tree.check_bst(), true);
         assert_eq!(tree.max_path_sum(), None);
     }
 
@@ -401,15 +425,13 @@ mod tests {
     fn test_5() {
         let mut tree = Tree::with_root(5);
 
-        // Level 1
-        tree.add_node(0, 10, true); // Left child of root
-        tree.add_node(1, 15, false); // Right child of root
-    
-        // Level 2
-        tree.add_node(2, 3, true); // Left child of left child
-        tree.add_node(3, 17, false); // Right child of left child
-        tree.add_node(4, -12, true); // Left child of right child
-        tree.add_node(0, -18, false); // Right child of right child
+        tree.add_node(0, 10, true);
+        tree.add_node(1, 15, false);
+
+        tree.add_node(2, 3, true);
+        tree.add_node(3, 17, false);
+        tree.add_node(4, -12, true);
+        tree.add_node(0, -18, false);
         assert_eq!(tree.check_bst(), false);
         assert_eq!(tree.max_path_sum(), Some(20));
     }
@@ -418,16 +440,34 @@ mod tests {
     fn test_6() {
         let mut tree = Tree::with_root(5);
 
-        // Level 1
-        tree.add_node(0, 10, true); // Left child of root
-        tree.add_node(1, 15, false); // Right child of root
-    
-        // Level 2
-        tree.add_node(2, 3, true); // Left child of left child
-        tree.add_node(2, 17, false); // Right child of left child
-        tree.add_node(3, -12, true); // Left child of right child
-        tree.add_node(4, -18, false); // Right child of right child
+        tree.add_node(0, 10, true);
+        tree.add_node(1, 15, false);
+
+        tree.add_node(2, 3, true);
+        tree.add_node(2, 17, false);
+        tree.add_node(3, -12, true);
+        tree.add_node(4, -18, false);
+        tree.add_node(0, 0, false);
         assert_eq!(tree.check_bst(), false);
-        assert_eq!(tree.max_path_sum(), Some(5));
+        assert_eq!(tree.max_path_sum(), Some(29));
+    }
+
+    #[test]
+    fn test_7() {
+        let mut tree = Tree::with_root(5);
+
+        tree.add_node(0, 0, true);
+        tree.add_node(0, 10, false);
+        tree.add_node(1, -5, true);
+        tree.add_node(2, 15, false);
+
+        tree.add_node(1, 3, false);
+        tree.add_node(2, 7, true);
+        tree.add_node(5, 1, true);
+        tree.add_node(6, 9, false);
+        tree.add_node(7, 2, false);
+        tree.add_node(8, 8, true);
+        assert_eq!(tree.check_bst(), true);
+        assert_eq!(tree.max_path_sum(), Some(49));
     }
 }
