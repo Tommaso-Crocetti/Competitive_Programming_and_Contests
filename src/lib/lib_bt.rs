@@ -138,6 +138,8 @@ where
 
     ///check if the tree is a bst.
     ///
+    /// # Panics
+    /// Panics if node_id of some node exceeds the limit of the array of nodes of the tree. 
     ///#Example
     ///```
     ///use competitive_programming_and_contest_24::lib::lib_bt::Tree;
@@ -165,18 +167,23 @@ where
     }
 
     fn rec_check_bst(&self, node_id: Option<usize>) -> (bool, T, T) {
+        //check if we are in a valid node or in a empty node
         if let Some(id) = node_id {
             assert!(id < self.nodes.len(), "Node id is out of range");
             let node = &self.nodes[id];
+            //retrieve recursive solutions
             let (bst_l, min_l, max_l) = self.rec_check_bst(node.id_left);
             let (bst_r, min_r, max_r) = self.rec_check_bst(node.id_right);
+            //compute the bst check on the current node
             let result: bool = node.key >= max_l && node.key < min_r;
+            //return the and of the bst check on the current node and the subtrees and the updated min and max value
             return (
                 result && bst_l && bst_r,
                 node.key.min(min_l).min(min_r),
                 node.key.max(max_l).max(max_r),
             );
         }
+        //in a empty node return the base values
         (true, T::max_value(), T::min_value())
     }
 
@@ -217,6 +224,8 @@ where
     ///Compute the maximum sum path from a leaf to another leaf contained in the tree.
     ///If there exists at least two leaf, it returns Some(result), otherwise None.
     ///
+    /// # Panics
+    /// Panics if node_id of some node exceeds the limit of the array of nodes of the tree. 
     ///#Example
     ///```
     ///use competitive_programming_and_contest_24::lib::lib_bt::Tree;
@@ -239,12 +248,17 @@ where
     }
 
     fn rec_max_path_sum(&self, node_id: Option<usize>) -> (Option<T>, Option<T>) {
+        //check if we are in a valid node or in a empty node
         if let Some(id) = node_id {
             assert!(id < self.nodes.len(), "Node id is out of range");
             let node = &self.nodes[id];
+            //retrieve recursive solutions
             let (lres, lpath) = self.rec_max_path_sum(node.id_left);
             let (rres, rpath) = self.rec_max_path_sum(node.id_right);
+            //check if the subtrees contains a path leaf-leaf
             match (lres, rres) {
+                //both solutions exists, return the max. between them and the path that steps on the current node
+                //and also update the path to the max. between them plus the current key
                 (Some(left_res), Some(right_res)) => {
                     return (
                         Some(
@@ -255,10 +269,14 @@ where
                         Some(lpath.unwrap().max(rpath.unwrap()) + node.key),
                     );
                 }
+                //it exists a left solution, check if exists a right path
                 (Some(left_res), None) => match rpath {
+                    //doesn't exist a right path, so return the right result and update the left path
                     None => {
                         return (Some(left_res), Some(lpath.unwrap() + node.key));
                     }
+                    //it exists, so return the max. between the left solution and the path that steps in the current node
+                    //and also update the path to the max. between them plus the current key
                     Some(right_path) => {
                         return (
                             Some(left_res.max(lpath.unwrap() + right_path + node.key)),
@@ -266,10 +284,14 @@ where
                         );
                     }
                 },
+                //it exists a right solution, check if exists a left path
                 (None, Some(right_res)) => match lpath {
+                    //doesn't exist a left path, so return the right result and update the right path
                     None => {
                         return (Some(right_res), Some(rpath.unwrap() + node.key));
                     }
+                    //it exists, so return the max. between the right solution and the path that steps in the current node
+                    //and also update the path to the max. between them plus the current key
                     Some(left_path) => {
                         return (
                             Some(right_res.max(left_path + rpath.unwrap() + node.key)),
@@ -277,25 +299,31 @@ where
                         );
                     }
                 },
+                //no path exists in both subtrees, check the paths in them
                 (None, None) => match (lpath, rpath) {
+                    //there are two path, build the first solution
                     (Some(left_path), Some(right_path)) => {
                         return (
                             Some(left_path + right_path + node.key),
                             Some(left_path.max(right_path) + node.key),
                         );
                     }
+                    //a left path exists, update it
                     (Some(left_path), None) => {
                         return (None, Some(left_path + node.key));
                     }
+                    //a right path exists, update it
                     (None, Some(right_path)) => {
                         return (None, Some(right_path + node.key));
                     }
+                    //no path exists, so start one
                     (None, None) => {
                         return (None, Some(node.key));
                     }
                 },
             }
         };
+        //in a empty node return the base values
         (None, None)
     }
 
