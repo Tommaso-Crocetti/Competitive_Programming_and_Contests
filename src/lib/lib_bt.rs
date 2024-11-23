@@ -78,94 +78,15 @@ where
         child_id
     }
 
-    pub fn max(&self) -> T {
-        if let Some(id) = self.rec_max(Some(0)) {
-            return self.nodes[id].key;
-        }
-        T::min_value()
-    }
-
-    fn rec_max(&self, node_id: Option<usize>) -> Option<usize> {
-        if let Some(id) = node_id {
-            assert!(id < self.nodes.len(), "Node id is out of range");
-            let node = &self.nodes[id];
-            let mut result: usize = id;
-            let max_l = self.rec_max(node.id_left);
-            let max_r = self.rec_max(node.id_right);
-            if let Some(id_l) = max_l {
-                if self.nodes[result].key < self.nodes[id_l].key {
-                    result = id_l;
-                }
-            }
-            if let Some(id_r) = max_r {
-                if self.nodes[result].key < self.nodes[id_r].key {
-                    result = id_r;
-                }
-            }
-            return Some(result);
-        }
-        None
-    }
-
-    pub fn min(&self) -> T {
-        if let Some(id) = self.rec_min(Some(0)) {
-            return self.nodes[id].key;
-        }
-        T::max_value()
-    }
-
-    fn rec_min(&self, node_id: Option<usize>) -> Option<usize> {
-        if let Some(id) = node_id {
-            assert!(id < self.nodes.len(), "Node id is out of range");
-            let node = &self.nodes[id];
-            let mut result: usize = id;
-            let min_l = self.rec_min(node.id_left);
-            let min_r = self.rec_min(node.id_right);
-            if let Some(id_l) = min_l {
-                if self.nodes[result].key > self.nodes[id_l].key {
-                    result = id_l;
-                }
-            }
-            if let Some(id_r) = min_r {
-                if self.nodes[result].key > self.nodes[min_r.unwrap()].key {
-                    result = id_r;
-                }
-            }
-            return Some(result);
-        }
-        None
-    }
-
-    ///check if the tree is a bst.
-    ///
+    ///return a boolean value that represent if the tree is a bst.
     /// # Panics
-    /// Panics if node_id of some node exceeds the limit of the array of nodes of the tree. 
-    ///#Example
-    ///```
-    ///use competitive_programming_and_contest_24::lib::lib_bt::Tree;
-    ///let mut tree = Tree::with_root(10);
-    ///tree.add_node(0, 5, true);
-    ///tree.add_node(0, 22, false);
-    ///tree.add_node(1, 10, false);
-    ///tree.add_node(2, 20, true);
-    ///assert_eq!(tree.check_bst(), true);
-    ///```
-    ///```
-    ///use competitive_programming_and_contest_24::lib::lib_bt::Tree;
-    ///let mut tree = Tree::with_root(10);
-    ///let left_child_id = tree.add_node(0, 5, true);
-    ///let right_child_id = tree.add_node(0, -15, false);
-    ///tree.add_node(left_child_id, 3, true);
-    ///tree.add_node(left_child_id, -7, false);
-    ///tree.add_node(right_child_id, 12, true);
-    ///tree.add_node(right_child_id, 18, false);
-    ///assert_eq!(tree.check_bst(), false);
-    ///```
+    /// Panics if node_id of some node exceeds the limit of the array of nodes of the tree.
     pub fn check_bst(&self) -> bool {
         let (result, _, _) = self.rec_check_bst(Some(0));
         result
     }
 
+    //recursive function that check if the current node is a root of a bst subtree
     fn rec_check_bst(&self, node_id: Option<usize>) -> (bool, T, T) {
         //check if we are in a valid node or in a empty node
         if let Some(id) = node_id {
@@ -187,66 +108,16 @@ where
         (true, T::max_value(), T::min_value())
     }
 
-    pub fn check_balance(&self) -> bool {
-        let (result, _) = self.rec_check_balance(Some(0));
-        result
-    }
-
-    fn rec_check_balance(&self, node_id: Option<usize>) -> (bool, u32) {
-        if let Some(id) = node_id {
-            assert!(id < self.nodes.len(), "Node id is out of range");
-            let node = &self.nodes[id];
-            let (l, l_h) = self.rec_check_balance(node.id_left);
-            let (r, r_h) = self.rec_check_balance(node.id_right);
-            let counter: u32 = if l_h < r_h { r_h - l_h } else { l_h - r_h };
-            return (l && r && counter <= 1, l_h.max(r_h) + 1);
-        }
-        (true, 0)
-    }
-
-    pub fn equals_sum(&self) -> u32 {
-        let (result, _) = self.rec_equals_sum(Some(0), T::zero());
-        result
-    }
-
-    fn rec_equals_sum(&self, node_id: Option<usize>, path_sum: T) -> (u32, T) {
-        if let Some(id) = node_id {
-            assert!(id < self.nodes.len(), "Node id is out of range");
-            let node = &self.nodes[id];
-            let (lcount, lsum) = self.rec_equals_sum(node.id_left, path_sum + node.key);
-            let (rcount, rsum) = self.rec_equals_sum(node.id_right, path_sum + node.key);
-            let count = if path_sum == lsum + rsum { 1 } else { 0 };
-            return (lcount + rcount + count, lsum + rsum + node.key);
-        };
-        (0, T::zero())
-    }
-
     ///Compute the maximum sum path from a leaf to another leaf contained in the tree.
     ///If there exists at least two leaf, it returns Some(result), otherwise None.
-    ///
     /// # Panics
-    /// Panics if node_id of some node exceeds the limit of the array of nodes of the tree. 
-    ///#Example
-    ///```
-    ///use competitive_programming_and_contest_24::lib::lib_bt::Tree;
-    ///let mut tree = Tree::with_root(10);
-    ///tree.add_node(0, 5, true);
-    ///tree.add_node(0, 22, false);
-    ///tree.add_node(1, 10, false);
-    ///tree.add_node(2, 20, true);
-    ///assert_eq!(tree.max_path_sum(), Some(67));
-    ///```
-    ///```
-    ///use competitive_programming_and_contest_24::lib::lib_bt::Tree;
-    ///let tree = Tree::with_root(0);
-    ///assert_eq!(tree.check_bst(), true);
-    ///assert_eq!(tree.max_path_sum(), None);
-    ///```
+    /// Panics if node_id of some node exceeds the limit of the array of nodes of the tree.
     pub fn max_path_sum(&self) -> Option<T> {
         let (result, _) = self.rec_max_path_sum(Some(0));
         result
     }
 
+    //recursive function that computes the max. path sum in the current subtree
     fn rec_max_path_sum(&self, node_id: Option<usize>) -> (Option<T>, Option<T>) {
         //check if we are in a valid node or in a empty node
         if let Some(id) = node_id {
@@ -325,6 +196,98 @@ where
         };
         //in a empty node return the base values
         (None, None)
+    }
+
+    pub fn max(&self) -> T {
+        if let Some(id) = self.rec_max(Some(0)) {
+            return self.nodes[id].key;
+        }
+        T::min_value()
+    }
+
+    fn rec_max(&self, node_id: Option<usize>) -> Option<usize> {
+        if let Some(id) = node_id {
+            assert!(id < self.nodes.len(), "Node id is out of range");
+            let node = &self.nodes[id];
+            let mut result: usize = id;
+            let max_l = self.rec_max(node.id_left);
+            let max_r = self.rec_max(node.id_right);
+            if let Some(id_l) = max_l {
+                if self.nodes[result].key < self.nodes[id_l].key {
+                    result = id_l;
+                }
+            }
+            if let Some(id_r) = max_r {
+                if self.nodes[result].key < self.nodes[id_r].key {
+                    result = id_r;
+                }
+            }
+            return Some(result);
+        }
+        None
+    }
+
+    pub fn min(&self) -> T {
+        if let Some(id) = self.rec_min(Some(0)) {
+            return self.nodes[id].key;
+        }
+        T::max_value()
+    }
+
+    fn rec_min(&self, node_id: Option<usize>) -> Option<usize> {
+        if let Some(id) = node_id {
+            assert!(id < self.nodes.len(), "Node id is out of range");
+            let node = &self.nodes[id];
+            let mut result: usize = id;
+            let min_l = self.rec_min(node.id_left);
+            let min_r = self.rec_min(node.id_right);
+            if let Some(id_l) = min_l {
+                if self.nodes[result].key > self.nodes[id_l].key {
+                    result = id_l;
+                }
+            }
+            if let Some(id_r) = min_r {
+                if self.nodes[result].key > self.nodes[min_r.unwrap()].key {
+                    result = id_r;
+                }
+            }
+            return Some(result);
+        }
+        None
+    }
+
+    pub fn check_balance(&self) -> bool {
+        let (result, _) = self.rec_check_balance(Some(0));
+        result
+    }
+
+    fn rec_check_balance(&self, node_id: Option<usize>) -> (bool, u32) {
+        if let Some(id) = node_id {
+            assert!(id < self.nodes.len(), "Node id is out of range");
+            let node = &self.nodes[id];
+            let (l, l_h) = self.rec_check_balance(node.id_left);
+            let (r, r_h) = self.rec_check_balance(node.id_right);
+            let counter: u32 = if l_h < r_h { r_h - l_h } else { l_h - r_h };
+            return (l && r && counter <= 1, l_h.max(r_h) + 1);
+        }
+        (true, 0)
+    }
+
+    pub fn equals_sum(&self) -> u32 {
+        let (result, _) = self.rec_equals_sum(Some(0), T::zero());
+        result
+    }
+
+    fn rec_equals_sum(&self, node_id: Option<usize>, path_sum: T) -> (u32, T) {
+        if let Some(id) = node_id {
+            assert!(id < self.nodes.len(), "Node id is out of range");
+            let node = &self.nodes[id];
+            let (lcount, lsum) = self.rec_equals_sum(node.id_left, path_sum + node.key);
+            let (rcount, rsum) = self.rec_equals_sum(node.id_right, path_sum + node.key);
+            let count = if path_sum == lsum + rsum { 1 } else { 0 };
+            return (lcount + rcount + count, lsum + rsum + node.key);
+        };
+        (0, T::zero())
     }
 
     pub fn check_max_heap(&self) -> bool {

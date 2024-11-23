@@ -39,7 +39,7 @@ Tommaso Crocetti
 
 # Brief introduction
 
--   The solutions use the tree implementation given on the course's website, extended to support both signed and unsigned integer.
+-   The solutions use the tree implementation given on the course's website, extended to support both signed and unsigned integers. The Cargo.toml file must have num as a dependency, the suggested version is the latest 0.4.3.
 
 ```rust
 pub struct Node<T>
@@ -63,9 +63,14 @@ where
     }
 }
 ```
+<div class="abs-br m-6 flex gap-2">
+  <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
+    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
+    <carbon-logo-github />
+  </a>
+</div>
 ---
 
-# Brief introduction
 ```rust
 pub struct Tree<T>
 where T: Integer + Bounded + Copy + Add<Output = T> + Sub<Output = T>,
@@ -81,14 +86,18 @@ where
             nodes: vec![Node::<T>::new(key)],
         }
     }
-    //add_node and other methods...
+    
     pub fn check_bst($self) -> bool
-    //other methods...
+    fn rec_check_bst($self, node_id: Option<usize>) -> (bool, T, T)
     pub fn max_path_sum(&self) -> Option<T>
+    fn rec_max_path_sum($self, node_id: Option<usize>) -> (Option<T>, Option<T>)
+    //add_node and other methods...
 }
 ```
-<br>
--  The base case for the recursive functions is a visit of an empty node, reached after a visit of a leaf.
+
+- The base case for the recursive functions is a visit of an empty node, reached after a visit of a leaf.
+
+- The given file "lib.rs" contains the definition of other methods, for the aim of the hands-on, only the functions check_bst, rec_check_bst, max_path_sum, and rec_max_path_sum are needed.
 
 
 <style>
@@ -109,9 +118,6 @@ h1 {
   </a>
 </div>
 
-<!--
-Here is another comment.
--->
 
 ---
 
@@ -127,15 +133,21 @@ smaller than all in the right subtree. So, to verify these
 conditions it’s not possible to only check on the current
 node's key and the key of the left and right child because
 we will miss the check on the global condition
-(a key must be greater/smaller of ALL keys in the respective subtree).
+(a key must be greater/smaller than ALL keys in the respective subtree).
 So for each node, we compare the current key with the maximum key
 in the left subtree and with the minimum key in the right subtree. If a node verifies the two conditions with those values, then its key must be greater or equal/smaller than every key in the respective subtrees.
+
+<div class="abs-br m-6 flex gap-2">
+  <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
+    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
+    <carbon-logo-github />
+  </a>
+</div>
 
 ---
 
 # Solution #1
 
-<br>
 The implementation of the solution is split into two functions:
 
 -   check_bst: the wrapper function, calls the recursive function
@@ -192,6 +204,7 @@ fn rec_check_bst(&self, node_id: Option<usize>) -> (bool, T, T) {
 }
 ```
 This solution exploits a post-order visit, with constant time operations in each node. Given the number of nodes n, the time complexity is Θ(n), and space complexity is Θ(1) since it doesn't require any additional space.
+
 <div class="abs-br m-6 flex gap-2">
   <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
     class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
@@ -208,14 +221,14 @@ simple path connecting two leaves.
 
 ## Idea of the solution
 
-To find the maximum (simple) path sum from a leaf to another leaf it is
+To find the maximum (simple) path sum from one leaf to another leaf it is
 necessary to evaluate the maximum between the maximum
 path sum in the left and right subtree and the maximum sum path
 that steps on the current node. While the first two values can
 be simply collected recursively, the last one must be
 calculated as the sum between the current node's key and
 the left and right maximum path sum from a leaf to the current node.
-In order to build a correct solution, it's important to check if the current subtree actually has at least two leaves, otherwise the solution returned could be inconsistent.
+To build a correct solution, it's important to check if the current subtree has at least two leaves, otherwise, the solution returned could be inconsistent.
 
 <div class="abs-br m-6 flex gap-2">
   <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
@@ -227,17 +240,16 @@ In order to build a correct solution, it's important to check if the current sub
 
 # Solution #2
 
-<br>
 As before, the implementation of the solution is split into two functions:
 
 -   max_path_sum: the wrapper function, calls the recursive function
     on the root’s index of the tree (Some(0)) and returns the
-    recursive result, ignoring the other value returned.
+    the recursive result, ignoring the other value returned.
 
 -   rec_max_path_sum: the recursive function, evaluates the maximum
     path sum on the current node's subtree and the maximum path
-    sum from a leaf to the current node. The result value is a
-    couple of Option T values. None on the first value means that there isn't a couple of leaves in the subtree, None on the second value means that there isn't even a leaf.
+    the sum from a leaf to the current node. The result value is a
+    a couple of Option T values. None on the first value means that there isn't a couple of leaves in the subtree, None on the second value means that there isn't even a leaf.
     - If the recursive call happens on an empty node,
     it just returns the base values (None, None).
     - Otherwise, it calls
@@ -278,10 +290,13 @@ fn rec_max_path_sum(&self, node_id: Option<usize>) -> (Option<T>, Option<T>) {
                 }
 
 ```
+<div class="abs-br m-6 flex gap-2">
+  <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
+    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
+    <carbon-logo-github />
+  </a>
+</div>
 ---
-
-# Code #2
-
 
 ```rust
                 Some(right_path) => {
@@ -311,9 +326,14 @@ fn rec_max_path_sum(&self, node_id: Option<usize>) -> (Option<T>, Option<T>) {
                 }
 
 ```
+<div class="abs-br m-6 flex gap-2">
+  <a href="https://github.com/Tommaso-Crocetti/Competitive_Programming_and_Contests" target="_blank" alt="GitHub" title="Open in GitHub"
+    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
+    <carbon-logo-github />
+  </a>
+</div>
 ---
 
-# Code #2
 ```rust
                 (Some(left_path), None) => {
                     return (None, Some(left_path + node.key));
