@@ -93,18 +93,16 @@ fn main() {
                         (query_values[2] - 1) as usize,
                         query_values[3],
                     );
-                } else {
-                    if let Some(res) = seg_tree.max(
-                        (query_values[1] - 1) as usize,
-                        (query_values[2] - 1) as usize,
-                    ) {
-                        println!("{}", res)
-                    }
+                } else if let Some(res) = seg_tree.max(
+                    (query_values[1] - 1) as usize,
+                    (query_values[2] - 1) as usize,
+                ) {
+                    println!("{}", res)
                 }
             }
             Err(_) => {
                 println!("Errore nella lettura di una riga.");
-                return; // Se c'è un errore, termina la funzione
+                return;
             }
         }
     }

@@ -76,6 +76,7 @@ impl Minandmax {
     }
 
     fn range_update(&mut self, node_id: usize, ql: usize, qr: usize, value: u32) {
+        
         self.propagate(node_id); //Assicurati che l'aggiornamento in sospeso sia applicato
 
         // Caso 1: Intervallo completamente fuori
@@ -140,6 +141,6 @@ impl Minandmax {
 
     pub fn max(&mut self, l: usize, r: usize) -> Option<u32> {
         let root_id = self.nodes.len() - 1;
-        return self.query(root_id, l, r);
+        self.query(root_id, l, r)
     }
 }

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 fn get_prefix(arr: &[(u32, u32)]) -> Vec<i32> {
-    let n = arr.len() as usize;
+    let n = arr.len();
     let mut prefix: Vec<i32> = vec![0; n];
     for i in arr {
         prefix[i.0 as usize] += 1;
@@ -115,6 +115,6 @@ impl Isthere {
 
     pub fn isthere(&self, i: usize, j: usize, k: i32) -> u32 {
         let root_id = self.nodes.len() - 1;
-        return self.query(root_id, i, j, k) as u32;
+        self.query(root_id, i, j, k) as u32
     }
 }

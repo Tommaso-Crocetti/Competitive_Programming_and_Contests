@@ -44,7 +44,7 @@ fn main() {
         .collect();
 
     let n = values[0];
-    let mut segments: Vec<(u32, u32)> = vec![(0,0); n as usize];
+    let mut segments: Vec<(u32, u32)> = vec![(0, 0); n as usize];
     for i in 0..n {
         current = match lines.next() {
             Some(Ok(line)) => line,
